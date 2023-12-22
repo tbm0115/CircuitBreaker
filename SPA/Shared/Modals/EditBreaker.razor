@@ -1,0 +1,40 @@
+﻿<div class="my-2">
+    <label for="txtLabel" class="form-label">Notes:</label>
+    <div class="input-group">
+        <textarea id="txtLabel" @ref="LabelInput" class="form-control" rows="3" value="@(Breaker.Label)" @onchange="OnLabelChanged" />
+    </div>
+</div>
+<div class="my-2">
+    <label for="txtAmps" class="form-label">Amperage</label>
+    <div class="input-group">
+        <input id="txtAmps" type="number" @ref="AmperageInput" min="0" max="240" class="form-control" value="@(Breaker.Amperage)" @onchange="OnAmperageChanged" />
+    </div>
+</div>
+<!-- TODO: Add Type radio buttons -->
+
+@code {
+    private ElementReference LabelInput, AmperageInput;
+
+    [Parameter]
+    public Models.CircuitBreakerInstance.Breaker Breaker { get; set; }
+
+    [Parameter]
+    public Action<Models.CircuitBreakerInstance.Breaker> OnChange { get; set; }
+
+    private async Task OnLabelChanged(EventArgs e)
+    {
+        string label = await JSRuntime.InvokeAsync<string>("getValue", LabelInput);
+        Breaker.Label = label;
+        OnChange(Breaker);
+    }
+
+    private async Task OnAmperageChanged(EventArgs e)
+    {
+        string amps = await JSRuntime.InvokeAsync<string>("getValue", AmperageInput);
+        if (int.TryParse(amps, out int amperage))
+        {
+            Breaker.Amperage = amperage;
+            OnChange(Breaker);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+﻿@page "/qr/{URL}"
+@using CircuitBreakerApp.Components.Shared
+@layout EmptyLayout
+
+<CircuitBreakerApp.Components.Shared.QR_Code Url="URL" />
+
+@code {
+    [Parameter]
+    public string URL { get; set; }
+}

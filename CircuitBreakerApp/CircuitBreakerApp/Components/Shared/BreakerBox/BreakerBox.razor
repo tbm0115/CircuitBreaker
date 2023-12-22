@@ -1,0 +1,16 @@
+﻿<div class="breaker-box">
+    <div class="breaker-main" />
+    <CascadingValue Value="Instance">
+        <BreakerPanel />
+        <BreakerDoor />
+    </CascadingValue>
+</div>
+@code {
+    [Parameter]
+    public Models.CircuitBreakerInstance Instance { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+}

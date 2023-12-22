@@ -1,0 +1,51 @@
+﻿@using BlazorBootstrap
+<div class="breaker-box">
+    <div class="breaker-main" />
+    <CascadingValue Value="Instance">
+        <CascadingValue Value="OnBreakerClicked">
+            <BreakerPanel OnAddRow="AddRow" OnBreakerClicked="OnBreakerClicked" />
+            <BreakerDoor />
+        </CascadingValue>
+    </CascadingValue>
+</div>
+
+<Modal @ref="modal" />
+@code {
+    private Modal modal = default!;
+
+    [Parameter]
+    public Models.CircuitBreakerInstance Instance { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+    private async Task AddRow()
+    {
+        Instance.Breakers.Add(new Models.CircuitBreakerInstance.Breaker());
+        Instance.Breakers.Add(new Models.CircuitBreakerInstance.Breaker());
+        await InvokeAsync(StateHasChanged);
+    }
+    private void OnBreakerClicked(Models.CircuitBreakerInstance.Breaker breaker)
+    {
+        int listIndex = Instance.Breakers.IndexOf(breaker);
+        int breakerIndex = listIndex;
+        if (listIndex % 2 == 0)
+        {
+            breakerIndex += 2;
+        }
+        Console.WriteLine("Clicked [" + breakerIndex.ToString() + "]");
+        ShowBreakerModal(breaker);
+    }
+    private void OnBreakerChanged(Models.CircuitBreakerInstance.Breaker breaker)
+    {
+        StateHasChanged();
+    }
+    private async Task ShowBreakerModal(Models.CircuitBreakerInstance.Breaker breaker)
+    {
+        var parameters = new Dictionary<string, object>();
+        parameters.Add("Breaker", breaker);
+        parameters.Add("OnChange", OnBreakerChanged);
+        await modal.ShowAsync<Shared.Modals.EditBreaker>(title: "Edit Breaker", parameters: parameters);
+    }
+}

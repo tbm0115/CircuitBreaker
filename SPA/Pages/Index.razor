@@ -1,0 +1,122 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.WebUtilities
+@using System.IO.Compression
+<PageTitle>Index</PageTitle>
+
+<div class="container">
+    <div class="clearfix">
+        <button type="button" class="btn btn-outline-secondary float-end" @onclick=Save>Save</button>
+    </div>
+</div>
+@if (Instance != null)
+{
+    <SPA.Shared.BreakerBox.BreakerBox Instance="Instance" />
+}
+else if (!string.IsNullOrEmpty(C))
+{
+    <span>Loading</span>
+}
+else
+{
+    <button type="button" class="btn btn-outline-primary" @onclick="(e) => Create(e)">Create</button>
+}
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private string C { get; set; }
+
+    private Models.CircuitBreakerInstance? Instance { get; set; }
+    private string url { get; set; }
+
+    protected override Task OnParametersSetAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("c", out var configString))
+        {
+            C = configString;
+            Instance = FromCompressedBase64UrlParameter(C);
+        }
+        return base.OnParametersSetAsync();
+    }
+
+    // protected override void OnInitialized()
+    // {
+    //     base.OnInitialized();
+    // }
+
+    private void Create(MouseEventArgs e)
+    {
+        Instance = new Models.CircuitBreakerInstance();
+        Instance.Breakers = Enumerable.Range(0, 20).Select(o => new Models.CircuitBreakerInstance.Breaker()).ToList();
+    }
+    private async Task Save()
+    {
+        url = await GenerateEncodedUrl();
+        await WindowInterop.OpenNewWindow(JSRuntime, "/qr/" + url); // Replace with your QR code URL
+
+        // Wait a bit before printing to allow the window to load the QR code
+        await Task.Delay(2000);
+
+        await WindowInterop.PrintWindow(JSRuntime, url);
+
+    }
+    private async Task<string> GenerateEncodedUrl()
+    {
+        if (Instance == null)
+            throw new ArgumentNullException();
+        var serializedData = System.Text.Json.JsonSerializer.Serialize(Instance);
+        // Compress JSON using GZip
+        byte[] jsonBytes = System.Text.Encoding.UTF8.GetBytes(serializedData);
+        using (MemoryStream ms = new MemoryStream())
+        {
+            using (GZipStream gzip = new GZipStream(ms, CompressionMode.Compress, true))
+            {
+                gzip.Write(jsonBytes, 0, jsonBytes.Length);
+            }
+            ms.Position = 0;
+
+            // Convert GZip compressed bytes to Base64
+            byte[] compressedBytes = new byte[ms.Length];
+            ms.Read(compressedBytes, 0, compressedBytes.Length);
+            string base64 = Convert.ToBase64String(compressedBytes);
+
+            // Encode for URL usage
+            var currentUrl = NavigationManager.Uri;
+            var baseUri = currentUrl.Substring(0, currentUrl.IndexOf(NavigationManager.BaseUri) + NavigationManager.BaseUri.Length);
+
+            var url = $"{baseUri}?c={base64}"; 
+            return System.Web.HttpUtility.UrlEncode(url);
+            // return HttpUtility.UrlEncode(base64);
+        }
+
+    }
+    public static Models.CircuitBreakerInstance FromCompressedBase64UrlParameter(string compressedBase64UrlParam)
+    {
+        // Decode URL parameter
+        string base64 = compressedBase64UrlParam.Replace(" ", "+");// System.Web.HttpUtility.UrlDecode(compressedBase64UrlParam);
+
+        // Convert Base64 to GZip compressed bytes
+        byte[] compressedBytes = Convert.FromBase64String(base64);
+        using (MemoryStream ms = new MemoryStream(compressedBytes))
+        {
+            using (GZipStream gzip = new GZipStream(ms, CompressionMode.Decompress))
+            {
+                using (MemoryStream decompressedMs = new MemoryStream())
+                {
+                    gzip.CopyTo(decompressedMs);
+                    decompressedMs.Position = 0;
+
+                    // Convert decompressed bytes to JSON
+                    byte[] decompressedBytes = new byte[decompressedMs.Length];
+                    decompressedMs.Read(decompressedBytes, 0, decompressedBytes.Length);
+                    string json = System.Text.Encoding.UTF8.GetString(decompressedBytes);
+
+                    // Deserialize JSON to object
+                    return System.Text.Json.JsonSerializer.Deserialize<Models.CircuitBreakerInstance>(json);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,215 @@
+﻿body {
+  box-sizing: border-box;
+}
+.breaker-box {
+  position: relative;
+  display: block;
+  background-color: #979d99;
+  width: 400px;
+  height: auto;
+  left: calc(50% - (400px / 2));
+  padding: 25px;
+  border: 4px inset dimgrey;
+  border-radius: 30px;
+  color: whitesmoke;
+}
+.breaker-box .breaker-main {
+  position: relative;
+  display: block;
+  width: calc(100px * 2);
+  height: 50px;
+  left: calc(50% - 100px);
+  border: 1px inset darkgrey;
+  border-radius: 3px;
+  background-color: #292c33;
+  padding: 5px;
+  margin-bottom: 50px;
+}
+.breaker-box .breaker-main::before {
+  content: 'Main';
+  position: absolute;
+  display: block;
+  background-color: grey;
+  height: 15px;
+  width: 50px;
+  right: 0px;
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg) translateX(calc(15px / -1));
+  text-align: center;
+  line-height: 15px;
+  padding: 2px;
+  box-shadow: -2px calc(15px * -0.85) 0px 0px black;
+}
+.breaker-box .breaker-panel {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: nowrap;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+}
+.breaker-box .breaker-panel .breaker-panel-column {
+  position: relative;
+  display: block;
+  width: 100px;
+  height: auto;
+  margin: 0px;
+}
+.breaker-box .breaker-panel .breaker-panel-column .breaker {
+  counter-increment: breakerCount 2;
+  position: relative;
+  display: block;
+  width: 100px;
+  height: 50px;
+  border: 1px inset darkgrey;
+  border-radius: 3px;
+  background-color: #292c33;
+  padding: 5px;
+  cursor: pointer;
+}
+.breaker-box .breaker-panel .breaker-panel-column .breaker.highlight {
+  /*background-color: lightgreen;*/
+  box-shadow: 0 0 7px gold;
+  border: 1px solid yellow;
+}
+.breaker-box .breaker-panel .breaker-panel-column .breaker:hover {
+  background-color: rgba(41, 44, 51, 0.9);
+}
+.breaker-box .breaker-panel .breaker-panel-column .breaker::before {
+  content: attr(data-amps);
+  position: absolute;
+  display: block;
+  background-color: grey;
+  height: 15px;
+  width: 50px;
+  transform-origin: 50% 50%;
+  transform: rotate(-90deg) translateX(calc(15px / -1));
+  text-align: center;
+  line-height: 15px;
+  padding: 2px;
+}
+.breaker-box .breaker-panel .breaker-panel-column .breaker::after {
+  content: counter(breakerCount);
+  position: absolute;
+  line-height: 50px;
+  color: lightgrey;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(1) {
+  counter-reset: breakerCount -1;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(1) .breaker::after {
+  left: -1.5em;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(1) .breaker::before {
+  @switch ToRight ();
+  transform: rotate(-90deg) translateX(calc(15px / -1)) scale(-1, -1);
+  box-shadow: 2px calc(15px * 0.85) 0px 0px black;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(1) .breaker.off::before {
+  @switch ToLeft ();
+  box-shadow: 2px calc(15px * -0.85) 0px 0px black;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(2) {
+  counter-reset: breakerCount 0;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(2) .breaker::after {
+  right: -1.5em;
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(2) .breaker::before {
+  @switch ToLeft ();
+}
+.breaker-box .breaker-panel .breaker-panel-column:nth-of-type(2) .breaker.off::before {
+  @switch ToRight ();
+  left: calc(100% - 50px);
+}
+.breaker-box .breaker-door {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 100px;
+  background-color: inherit;
+  left: 100%;
+  top: 0px;
+  border: inherit;
+  border-radius: inherit;
+  transform-origin: 0px 0px;
+  transform: skewY(5deg);
+}
+.breaker-box .breaker-door .breaker-panel {
+  top: 135px;
+}
+.breaker-box .breaker-door label {
+  counter-increment: breakerCount 2;
+  position: relative;
+  display: block;
+  width: 100px;
+  height: 50px;
+  border-style: solid;
+  border-color: black;
+  border-width: 2px 0px 2px 0px;
+  background-color: #f8faf9;
+  color: #363533;
+  line-height: 50px;
+  vertical-align: middle;
+  padding: 5px;
+  cursor: pointer;
+}
+.breaker-box .breaker-door label span {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 45%;
+  font-size: 0.75em;
+  line-height: calc(50px / 2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.breaker-box .breaker-door label span:first-of-type {
+  top: 0px;
+  border-bottom: 1px dashed black;
+}
+.breaker-box .breaker-door label span:last-of-type {
+  bottom: 0px;
+}
+.breaker-box .breaker-door label:hover {
+  left: -3px;
+  box-shadow: 2px 2px 3px 3px rgba(0, 0, 0, 0.35);
+  min-width: 100%;
+  white-space: nowrap;
+  overflow: initial;
+  width: auto;
+  width: max-content;
+}
+.breaker-box .breaker-door label:hover span {
+  min-width: 100%;
+  width: auto;
+  overflow: initial;
+  text-overflow: initial;
+}
+.overlay {
+  position: fixed;
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+.overlay.show {
+  display: block;
+}
+.overlay form {
+  position: absolute;
+  display: block;
+  width: calc(25vw - 50px);
+  height: calc(80vh - 50px);
+  background-color: whitesmoke;
+  left: calc(50vw - (25vw / 2));
+  top: calc(50vh - (80vh / 2));
+  border-radius: 10px;
+  padding: 25px;
+}

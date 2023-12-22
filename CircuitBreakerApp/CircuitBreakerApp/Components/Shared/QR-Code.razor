@@ -1,0 +1,36 @@
+﻿@using QRCoder
+@using System.Drawing
+@using System.Drawing.Imaging
+@code {
+    [Parameter]
+    public string Url { get; set; }
+
+    private string Base64QRCode { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var qrGenerator = new QRCodeGenerator();
+        var qrCodeData = qrGenerator.CreateQrCode(Url.ToString(), QRCodeGenerator.ECCLevel.Q);
+
+        var qrCode = new QRCode(qrCodeData);
+        var qrCodeImage = qrCode.GetGraphic(20);
+
+        var imageBase64 = Convert.ToBase64String(BitmapToBytes(qrCodeImage));
+        Base64QRCode = $"data:image/png;base64,{imageBase64}";
+    }
+
+    // Helper function to convert Bitmap to bytes
+    private byte[] BitmapToBytes(Bitmap bitmap)
+    {
+        using (var stream = new MemoryStream())
+        {
+            bitmap.Save(stream, ImageFormat.Png);
+            return stream.ToArray();
+        }
+    }
+}
+
+@if (!string.IsNullOrEmpty(Base64QRCode))
+{
+    <img src="@Base64QRCode" alt="QR Code" />
+}

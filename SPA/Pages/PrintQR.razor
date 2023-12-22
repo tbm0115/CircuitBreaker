@@ -1,0 +1,12 @@
+﻿@page "/qr/{URL}"
+@using SPA.Shared
+@layout EmptyLayout
+
+<CascadingValue Value="URL">
+    <QR_Code />
+</CascadingValue>
+
+@code {
+    [Parameter]
+    public string URL { get; set; }
+}

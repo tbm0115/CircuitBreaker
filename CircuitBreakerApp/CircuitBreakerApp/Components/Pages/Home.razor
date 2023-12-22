@@ -1,0 +1,73 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.WebUtilities
+
+<PageTitle>Home</PageTitle>
+
+<div class="container">
+    <div class="clearfix">
+        <button type="button" class="btn btn-outline-secondary" @onclick=Save>Save</button>
+    </div>
+</div>
+@if (Instance != null)
+{
+    
+} else if (!string.IsNullOrEmpty(C))
+{
+    <span>Loading</span>
+} else
+{
+    <button type="button" class="btn btn-outline-primary" @onclick="(e) => Create(e)">Create</button>
+}
+
+@code {
+    [Inject]
+    private NavigationManager NavigationManager { get; set; }
+
+    private string C { get; set; }
+
+    private Models.CircuitBreakerInstance? Instance { get; set; }
+    private string url { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("c", out var configString))
+        {
+            C = configString;
+            Instance = Newtonsoft.Json.JsonConvert.DeserializeObject<Models.CircuitBreakerInstance>(C);
+        }
+        base.OnInitialized();
+    }
+
+    private void Create(MouseEventArgs e)
+    {
+        Instance = new Models.CircuitBreakerInstance();
+    }
+    private async Task Save()
+    {
+        url = await GenerateEncodedUrl();
+        var windowReference = await WindowInterop.OpenNewWindow(JSRuntime, "/qr/" + url); // Replace with your QR code URL
+
+        // Wait a bit before printing to allow the window to load the QR code
+        await Task.Delay(2000);
+
+        if (windowReference != null)
+        {
+            await WindowInterop.PrintWindow(JSRuntime, windowReference);
+        }
+
+    }
+    private async Task<string> GenerateEncodedUrl()
+    {
+        if (Instance == null)
+            throw new ArgumentNullException();
+        var serializedData = System.Text.Json.JsonSerializer.Serialize(Instance);
+        var encodedData = System.Web.HttpUtility.UrlEncode(serializedData);
+
+        var currentUrl = NavigationManager.Uri;
+        var baseUri = currentUrl.Substring(0, currentUrl.IndexOf(NavigationManager.BaseUri) + NavigationManager.BaseUri.Length);
+
+        var url = $"{baseUri}?c={encodedData}"; // Replace 'your-page-route' with the actual route
+        return url;
+    }
+}
