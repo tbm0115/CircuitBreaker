@@ -9,9 +9,9 @@ namespace SPA
             await jsRuntime.InvokeVoidAsync("openNewWindow", url);
         }
 
-        public static async Task PrintWindow(IJSRuntime jsRuntime, object window)
+        public static async Task PrintWindow(IJSRuntime jsRuntime)
         {
-            await jsRuntime.InvokeVoidAsync("printWindow", window);
+            await jsRuntime.InvokeVoidAsync("printWindow");
         }
     }
 }

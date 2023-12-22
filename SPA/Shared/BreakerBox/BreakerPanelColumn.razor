@@ -11,9 +11,29 @@
         {
             if (ShowLabels)
             {
-                <label>
-                    <span>@(breaker.Label)</span>
-                </label>
+                @if (breaker.Type == Models.CircuitBreakerInstance.BreakerTypes.DoublePole)
+                {
+                    <label>
+                        <span>@(breaker.Label)</span>
+                    </label>
+                    <label>
+                        <span>@(breaker.Label)</span>
+                    </label>
+                } else if (breaker.Type == Models.CircuitBreakerInstance.BreakerTypes.DoubleCircuit)
+                {
+                    string[] parts = breaker.Label.Split('\n', StringSplitOptions.RemoveEmptyEntries);
+                    <label>
+                        @foreach (var part in parts)
+                        {
+                            <span>@(part)</span>
+                        }
+                    </label>
+                } else
+                {
+                    <label>
+                        <span>@(breaker.Label)</span>
+                    </label>
+                }
             } else
             {
                 <Breaker BreakerSwitch="breaker" OnBreakerClicked="OnBreakerClicked" />

@@ -7,6 +7,9 @@
 
     private string Base64QRCode { get; set; }
 
+    [Parameter]
+    public Delegate ImageGenerated { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         var qrGenerator = new QRCodeGenerator();
@@ -17,6 +20,8 @@
 
         var imageBase64 = Convert.ToBase64String(BitmapToBytes(qrCodeImage));
         Base64QRCode = $"data:image/png;base64,{imageBase64}";
+        if (ImageGenerated != null)
+            ImageGenerated?.DynamicInvoke();
     }
 
     // Helper function to convert Bitmap to bytes
@@ -32,5 +37,5 @@
 
 @if (!string.IsNullOrEmpty(Base64QRCode))
 {
-    <img src="@Base64QRCode" alt="QR Code" />
+    <img src="@Base64QRCode" alt="QR Code" style="object-fit: contain;width: 3in; height: 3in;" />
 }

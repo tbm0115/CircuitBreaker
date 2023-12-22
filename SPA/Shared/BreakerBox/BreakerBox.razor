@@ -3,7 +3,7 @@
     <div class="breaker-main" />
     <CascadingValue Value="Instance">
         <CascadingValue Value="OnBreakerClicked">
-            <BreakerPanel OnAddRow="AddRow" OnBreakerClicked="OnBreakerClicked" />
+            <BreakerPanel OnAdd="Add" OnBreakerClicked="OnBreakerClicked" />
             <BreakerDoor />
         </CascadingValue>
     </CascadingValue>
@@ -20,9 +20,8 @@
     {
         return base.OnParametersSetAsync();
     }
-    private async Task AddRow()
+    private async Task Add()
     {
-        Instance.Breakers.Add(new Models.CircuitBreakerInstance.Breaker());
         Instance.Breakers.Add(new Models.CircuitBreakerInstance.Breaker());
         await InvokeAsync(StateHasChanged);
     }
@@ -41,11 +40,18 @@
     {
         StateHasChanged();
     }
+    private async void OnBreakerDeleted(Models.CircuitBreakerInstance.Breaker breaker)
+    {
+        Instance.Breakers.Remove(breaker);
+        await modal.HideAsync();
+        StateHasChanged();
+    }
     private async Task ShowBreakerModal(Models.CircuitBreakerInstance.Breaker breaker)
     {
         var parameters = new Dictionary<string, object>();
         parameters.Add("Breaker", breaker);
         parameters.Add("OnChange", OnBreakerChanged);
+        parameters.Add("OnDelete", OnBreakerDeleted);
         await modal.ShowAsync<Shared.Modals.EditBreaker>(title: "Edit Breaker", parameters: parameters);
     }
 }

@@ -1,11 +1,11 @@
 ﻿<div class="breaker-panel">
-    <BreakerPanelColumn Breakers="Instance.Breakers.Where((e, i) => i % 2 != 0)" ShowLabels="ShowLabels" OnBreakerClicked="OnBreakerClicked" />
-    <BreakerPanelColumn Breakers="Instance.Breakers.Where((e, i) => i % 2 == 0)" ShowLabels="ShowLabels" OnBreakerClicked="OnBreakerClicked" />
+    <BreakerPanelColumn Breakers="Instance.Breakers.Where((e, i) => (i + 1) % 2 != 0)" ShowLabels="ShowLabels" OnBreakerClicked="OnBreakerClicked" />
+    <BreakerPanelColumn Breakers="Instance.Breakers.Where((e, i) => (i + 1) % 2 == 0)" ShowLabels="ShowLabels" OnBreakerClicked="OnBreakerClicked" />
 </div>
 @if (!ShowLabels)
 {
     <div class="row my-3">
-        <button type="button" class="btn btn-outline-success" @onclick="OnAddRow">Add Row</button>
+        <button type="button" class="btn btn-outline-success" @onclick="OnAdd">Add </button>
     </div>
 }
 @code {
@@ -16,7 +16,7 @@
     public bool ShowLabels { get; set; } = false;
 
     [Parameter]
-    public EventCallback OnAddRow { get; set; }
+    public EventCallback OnAdd { get; set; }
 
     [Parameter]
     public EventCallback<Models.CircuitBreakerInstance.Breaker> OnBreakerClicked { get; set; }

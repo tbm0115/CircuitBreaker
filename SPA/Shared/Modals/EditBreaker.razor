@@ -10,16 +10,50 @@
         <input id="txtAmps" type="number" @ref="AmperageInput" min="0" max="240" class="form-control" value="@(Breaker.Amperage)" @onchange="OnAmperageChanged" />
     </div>
 </div>
-<!-- TODO: Add Type radio buttons -->
+<div class="my-2">
+    <label for="selType" class="form-label">Circuit Breaker Type</label>
+    <div class="input-group">
+        <select class="form-select" id="selType" @ref="TypeInput" @onchange="OnTypeChanged">
+            @{
+                var options = Enum.GetNames<Models.CircuitBreakerInstance.BreakerTypes>();
+                foreach (var option in options)
+                {
+                    bool isSelected = Breaker.Type.ToString() == option;
+                    if (isSelected)
+                    {
+                        <option value="@(option)" selected>@(option)</option>
+                    } else
+                    {
+                        <option value="@(option)">@(option)</option>
+                    }
+                }
+            }
+            <option value="@(nameof(Models.CircuitBreakerInstance.BreakerTypes.Unused))"></option>
+        </select>
+    </div>
+</div>
+
+<hr/>
+<div class="d-flex flex-row justify-content-center">
+    <button type="button" class="btn btn-danger" @onclick="DeleteClicked">Delete</button>
+</div>
 
 @code {
-    private ElementReference LabelInput, AmperageInput;
+    private ElementReference LabelInput, AmperageInput, TypeInput;
 
     [Parameter]
     public Models.CircuitBreakerInstance.Breaker Breaker { get; set; }
 
     [Parameter]
     public Action<Models.CircuitBreakerInstance.Breaker> OnChange { get; set; }
+
+    [Parameter]
+    public Action<Models.CircuitBreakerInstance.Breaker> OnDelete { get; set; }
+
+    private async Task DeleteClicked()
+    {
+        OnDelete(Breaker);
+    }
 
     private async Task OnLabelChanged(EventArgs e)
     {
@@ -34,6 +68,15 @@
         if (int.TryParse(amps, out int amperage))
         {
             Breaker.Amperage = amperage;
+            OnChange(Breaker);
+        }
+    }
+    private async Task OnTypeChanged(EventArgs e)
+    {
+        string type = await JSRuntime.InvokeAsync<string>("getValue", TypeInput);
+        if (Enum.TryParse<Models.CircuitBreakerInstance.BreakerTypes>(type, out var enumValue))
+        {
+            Breaker.Type = enumValue;
             OnChange(Breaker);
         }
     }

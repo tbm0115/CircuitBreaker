@@ -12,11 +12,16 @@ function openNewWindow(url) {
 }
 
 function printWindow(url) {
-    var entry = window["opened_windows"].find((e, i) => {
-        return e.url === url;
-    });
+    let entry = null;
+    if (typeof (window["opened_windows"]) !== "undefined" && window["opened_windows"] !== null) {
+        entry = window["opened_windows"].find((e, i) => {
+            return e.url === url;
+        });
+    }
     if (entry) {
         entry.window.print();
+    } else {
+        window.print();
     }
         //delete window["opened_windows"][url];
 }

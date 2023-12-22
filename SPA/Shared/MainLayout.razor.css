@@ -2,6 +2,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background: linear-gradient(to bottom, #192a56, #273c75);
+    color: #fff;
 }
 
 main {
@@ -13,8 +15,10 @@ main {
 }
 
 .top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
+    /*background-color: #f7f7f7;*/
+    background: transparent;
+    background-color: rgba(0, 0, 0, 0.4);
+    /*border-bottom: 1px solid #d6d5d5;*/
     justify-content: flex-end;
     height: 3.5rem;
     display: flex;

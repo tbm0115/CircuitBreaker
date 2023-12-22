@@ -99,3 +99,19 @@ a, .btn-link {
     .loading-progress-text:after {
         content: var(--blazor-load-percentage-text, "Loading");
     }
+
+    body {
+        background-color: #333;
+        color: #fff;
+    }
+@font-face {
+    font-family: 'Military'; /* Name for your custom font */
+    src: local('Military'), url('/fonts/MS33558.ttf') format('truetype');
+    /* Add other font properties if needed, like font-weight and font-style */
+}
+
+/* Apply the custom font to a specific class */
+.fs-military {
+    font-family: 'Military', sans-serif; /* Use the custom font or fallback to a default sans-serif font */
+    /* Other styles for the element */
+}

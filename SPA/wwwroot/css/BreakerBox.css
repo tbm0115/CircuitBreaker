@@ -4,7 +4,7 @@
 .breaker-box {
   position: relative;
   display: block;
-  background-color: #979d99;
+  background-color: #555;
   width: 400px;
   height: auto;
   left: calc(50% - (400px / 2));

@@ -3,10 +3,22 @@
 @layout EmptyLayout
 
 <CascadingValue Value="URL">
-    <QR_Code />
+    <div class="container d-flex flex-row justify-content-center my-4">
+        <QR_Code ImageGenerated="ImageReady" />
+    </div>
+    <p class="text-center">Generated on https://switchpanel.traismcallister.me/</p>
 </CascadingValue>
 
 @code {
     [Parameter]
     public string URL { get; set; }
+
+    private async Task ImageReady()
+    {
+        await Task.Delay(2000);
+        if (!string.IsNullOrEmpty(URL))
+        {
+            await WindowInterop.PrintWindow(JSRuntime);
+        }
+    }
 }
