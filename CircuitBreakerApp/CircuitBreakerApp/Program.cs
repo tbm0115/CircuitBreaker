@@ -1,4 +1,10 @@
 using CircuitBreakerApp.Components;
+using CircuitBreakerApp.Data;
+using CircuitBreakerApp.Models.Entities;
+using CircuitBreakerApp.Services;
+using CircuitBreakerApp.Services.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CircuitBreakerApp
 {
@@ -8,7 +14,19 @@ namespace CircuitBreakerApp
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
+            builder.Services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ??
+                                  "Data Source=app.db"));
+
+            builder.Services.AddIdentityCore<ApplicationUser>(options =>
+                {
+                    options.User.RequireUniqueEmail = false;
+                })
+                .AddRoles<IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddScoped<IPanelService, PanelService>();
+
             builder.Services.AddRazorComponents()
                 .AddInteractiveWebAssemblyComponents();
 
